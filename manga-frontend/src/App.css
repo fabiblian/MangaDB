@@ -1,0 +1,135 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  background: rgba(11, 15, 35, 0.76);
+  border-bottom: 1px solid rgba(52, 61, 126, 0.95);
+}
+
+.topbar-inner {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+}
+
+.brand {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #f0f2ff;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+}
+
+.nav-link {
+  padding: 0.42rem 0.65rem;
+  border-radius: 999px;
+  color: #c3caf8;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link:hover {
+  background: #1a2150;
+  border-color: #3847a8;
+}
+
+.nav-link.active {
+  background: #6a7dff;
+  color: #fff;
+  border-color: #6a7dff;
+}
+
+.app-content {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1.3rem auto 2rem;
+}
+
+.app-content > div {
+  background: rgba(15, 19, 44, 0.88);
+  border: 1px solid #2d3879;
+  border-radius: 18px;
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  box-shadow: var(--shadow);
+  animation: cardEnter 0.45s ease both;
+}
+
+.app-content form {
+  display: grid !important;
+  gap: 0.85rem !important;
+}
+
+.app-content [style*="color: red"] {
+  color: #fff !important;
+  background: linear-gradient(140deg, #d64545, #af2f2f);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-weight: 500;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.page-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-link {
+  border: 1px solid #3948a8;
+  border-radius: 999px;
+  padding: 0.38rem 0.7rem;
+  color: #dbe0ff;
+  background: #1a2150;
+}
+
+.action-link:hover {
+  border-color: #6579ff;
+  background: #232c67;
+  color: #fff;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .topbar-inner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .brand {
+    font-size: 1.2rem;
+  }
+
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

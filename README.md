@@ -4,7 +4,7 @@ Diese Abgabe enthaelt:
 
 - `manga-frontend` (React/Vite Frontend)
 - `manga-backend` (Spring Boot Backend)
-- `294_Projektdokumentation.docx` (Dokumentation)
+- `294_Projektdokumentation.pdf` (Dokumentation)
 
 ## Was in die ZIP gehoert
 
@@ -18,7 +18,7 @@ Diese Abgabe enthaelt:
 - `manga-backend/pom.xml`
 - `manga-backend/docker-compose.yml` (falls verwendet)
 - `manga-backend/db` (falls verwendet)
-- `294_Projektdokumentation.docx`
+- `294_Projektdokumentation.pdf`
 - `README.md` (diese Datei)
 
 ## Was nicht in die ZIP gehoert
@@ -61,8 +61,8 @@ npm test
 
 ```text
 294_LB.zip
-├─ manga-frontend/
-├─ manga-backend/
-├─ 294_Projektdokumentation.docx
-└─ README.md
+|-- manga-frontend/
+|-- manga-backend/
+|-- 294_Projektdokumentation.pdf
+`-- README.md
 ```

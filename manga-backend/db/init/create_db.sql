@@ -21,13 +21,10 @@ CREATE TABLE IF NOT EXISTS mangas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(50) NOT NULL,
   volume INT NOT NULL,
-
   category_id INT NOT NULL,
   publisher_id INT NOT NULL,
-
   CONSTRAINT fk_manga_category
     FOREIGN KEY (category_id) REFERENCES categories(id),
-
   CONSTRAINT fk_manga_publisher
     FOREIGN KEY (publisher_id) REFERENCES publishers(id)
 );
@@ -36,53 +33,46 @@ CREATE TABLE IF NOT EXISTS user_manga (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   manga_id INT NOT NULL,
-
   status ENUM('PLANNED', 'READING', 'COMPLETED', 'DROPPED') NOT NULL,
   rating INT,
   note VARCHAR(255),
-
   CONSTRAINT fk_user_manga_user
     FOREIGN KEY (user_id) REFERENCES users(id),
-
   CONSTRAINT fk_user_manga_manga
     FOREIGN KEY (manga_id) REFERENCES mangas(id),
-
   CONSTRAINT uq_user_manga UNIQUE (user_id, manga_id)
 );
 
-
-
---> Kategorien
-INSERT INTO categories (name) VALUES
+-- Kategorien
+INSERT IGNORE INTO categories (name) VALUES
 ('Shonen'),
 ('Seinen'),
 ('Shojo');
 
---> Verlage
-INSERT INTO publishers (name) VALUES
+-- Verlage
+INSERT IGNORE INTO publishers (name) VALUES
 ('Carlsen'),
 ('Tokyopop'),
-('Kazé');
+('Kaze');
 
---> Benutzer
-INSERT INTO users (username, email) VALUES
+-- Benutzer
+INSERT IGNORE INTO users (username, email) VALUES
 ('hans', 'hans@mail.com'),
 ('tom', 'tom@mail.com'),
 ('marco', 'marco@mail.com');
 
---> Manga
-INSERT INTO mangas (title, volume, category_id, publisher_id) VALUES
+-- Manga
+INSERT IGNORE INTO mangas (title, volume, category_id, publisher_id) VALUES
 ('One Piece', 1, 1, 1),
 ('One Piece', 2, 1, 1),
 ('Naruto', 1, 1, 2),
 ('Attack on Titan', 1, 2, 3),
 ('Demon Slayer', 1, 1, 2);
 
--->Status( User-manga
-INSERT INTO user_manga (user_id, manga_id, status, rating, note) VALUES
+-- Status (user_manga)
+INSERT IGNORE INTO user_manga (user_id, manga_id, status, rating, note) VALUES
 (1, 1, 'COMPLETED', 9, 'Starker Start'),
 (1, 2, 'READING', 2, 'Bin dran'),
-(2, 3, 'PLANNED', NULL, 'Als nächstes'),
+(2, 3, 'PLANNED', NULL, 'Als naechstes'),
 (3, 4, 'DROPPED', 4, 'Nicht mein Stil'),
 (2, 5, 'COMPLETED', 8, 'Sehr spannend');
-

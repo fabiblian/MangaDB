@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: manga-mysql
+    container_name: manga_db
     environment:
       MYSQL_DATABASE: manga_db
       MYSQL_USER: manga

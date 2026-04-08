@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getApiErrorMessage } from "../../api/client";
 import { UserApi } from "../../api/userApi";
 
 export default function UserEdit() {
   const { id } = useParams();
   const nav = useNavigate();
-
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("USER");
   const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
       try {
-        const u = await UserApi.get(id);
-        setUsername(u.username || "");
-        setEmail(u.email || "");
+        const user = await UserApi.get(id);
+        setUsername(user.username || "");
+        setEmail(user.email || "");
+        setRole(user.role || "USER");
       } catch (e) {
-        setError(e.response?.data || "Fehler beim Laden");
+        setError(getApiErrorMessage(e, "Fehler beim Laden"));
       }
     };
 
@@ -25,9 +28,9 @@ export default function UserEdit() {
   }, [id]);
 
   const validate = () => {
-    if (!username.trim()) return "Username ist Pflict";
-    if (username.length > 50) return "Username max 50 Zeichen";
-    if (email && email.length > 50) return "Email max 50 Zeichen";
+    if (!username.trim()) return "Username ist Pflicht";
+    if (!email.trim()) return "Email ist Pflicht";
+    if (password && password.length < 6) return "Passwort muss mindestens 6 Zeichen lang sein";
     return "";
   };
 
@@ -42,10 +45,10 @@ export default function UserEdit() {
     }
 
     try {
-      await UserApi.update(id, { username, email: email || null });
+      await UserApi.update(id, { username, email, password, role });
       nav("/users");
     } catch (e2) {
-      setError(e2.response?.data || "Fehler beim Speichern");
+      setError(getApiErrorMessage(e2, "Fehler beim Speichern"));
     }
   };
 
@@ -61,8 +64,21 @@ export default function UserEdit() {
         </label>
 
         <label>
-          Email (optional)
-          <input value={email} onChange={(e) => setEmail(e.target.value)} />
+          Email*
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </label>
+
+        <label>
+          Neues Passwort (optional)
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </label>
+
+        <label>
+          Rolle
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
         </label>
 
         <button type="submit">Speichern</button>

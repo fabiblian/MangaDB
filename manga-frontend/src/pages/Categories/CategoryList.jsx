@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getApiErrorMessage } from "../../api/client";
 import { CategoryApi } from "../../api/categoryApi";
-
-function getErrorMessage(e, fallback) {
-  const data = e?.response?.data;
-  if (!data) return fallback;
-  if (typeof data === "string") return data;
-  if (typeof data.message === "string") return data.message;
-  if (typeof data.error === "string") return data.error;
-  return fallback;
-}
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function CategoryList() {
+  const { user } = useAuth();
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
+  const isAdmin = user?.role === "ADMIN";
 
   const load = async () => {
     setError("");
     try {
       setCategories(await CategoryApi.list());
     } catch (e) {
-      setError(getErrorMessage(e, "Fehler beim Laden"));
+      setError(getApiErrorMessage(e, "Fehler beim Laden"));
     }
   };
 
@@ -34,7 +29,7 @@ export default function CategoryList() {
       await CategoryApi.remove(id);
       await load();
     } catch (e) {
-      setError(getErrorMessage(e, "Loeschen fehlgeschlagen (evtl. noch Manga-Referenzen)"));
+      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
     }
   };
 
@@ -43,9 +38,11 @@ export default function CategoryList() {
       <div className="page-head">
         <h2>Kategorien</h2>
         <div className="page-actions">
-          <Link className="action-link" to="/categories/new">
-            Kategorie Neu
-          </Link>
+          {isAdmin ? (
+            <Link className="action-link" to="/categories/new">
+              Kategorie Neu
+            </Link>
+          ) : null}
         </div>
       </div>
       {error && <div style={{ color: "red", marginBottom: 12 }}>{String(error)}</div>}
@@ -59,13 +56,11 @@ export default function CategoryList() {
           </tr>
         </thead>
         <tbody>
-          {categories.map((c) => (
-            <tr key={c.id}>
-              <td>{c.id}</td>
-              <td>{c.name}</td>
-              <td>
-                <button onClick={() => onDelete(c.id)}>Delete</button>
-              </td>
+          {categories.map((category) => (
+            <tr key={category.id}>
+              <td>{category.id}</td>
+              <td>{category.name}</td>
+              <td>{isAdmin ? <button onClick={() => onDelete(category.id)}>Delete</button> : <span>Nur Lesen</span>}</td>
             </tr>
           ))}
         </tbody>

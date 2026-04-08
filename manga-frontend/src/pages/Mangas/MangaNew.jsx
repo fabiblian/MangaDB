@@ -1,28 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api, getApiErrorMessage } from "../../api/client";
 import { MangaApi } from "../../api/mangaApi";
-import { api } from "../../api/client";
 import { validateMangaForm } from "./mangaUtils";
 
 export default function MangaNew() {
   const nav = useNavigate();
-
   const [title, setTitle] = useState("");
   const [volume, setVolume] = useState(1);
   const [categoryId, setCategoryId] = useState("");
   const [publisherId, setPublisherId] = useState("");
-
   const [categories, setCategories] = useState([]);
   const [publishers, setPublishers] = useState([]);
-
   const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
-      const cats = (await api.get("/categories")).data;
-      const pubs = (await api.get("/publishers")).data;
-      setCategories(cats);
-      setPublishers(pubs);
+      try {
+        const cats = (await api.get("/categories")).data;
+        const pubs = (await api.get("/publishers")).data;
+        setCategories(cats);
+        setPublishers(pubs);
+      } catch (e) {
+        setError(getApiErrorMessage(e, "Fehler beim Laden"));
+      }
     };
     load();
   }, []);
@@ -46,7 +47,7 @@ export default function MangaNew() {
       });
       nav("/mangas");
     } catch (e2) {
-      setError(e2.response?.data || "Fehler beim Speichern");
+      setError(getApiErrorMessage(e2, "Fehler beim Speichern"));
     }
   };
 
@@ -70,9 +71,9 @@ export default function MangaNew() {
           Kategorie
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
             <option value="">-- waehlen --</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
               </option>
             ))}
           </select>
@@ -82,9 +83,9 @@ export default function MangaNew() {
           Verlag
           <select value={publisherId} onChange={(e) => setPublisherId(e.target.value)}>
             <option value="">-- waehlen --</option>
-            {publishers.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
+            {publishers.map((publisher) => (
+              <option key={publisher.id} value={publisher.id}>
+                {publisher.name}
               </option>
             ))}
           </select>

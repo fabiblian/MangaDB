@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getApiErrorMessage } from "../../api/client";
 import { UserApi } from "../../api/userApi";
 
 export default function UserList() {
@@ -11,7 +12,7 @@ export default function UserList() {
     try {
       setUsers(await UserApi.list());
     } catch (e) {
-      setError(e.response?.data || "Fehler beim Laden");
+      setError(getApiErrorMessage(e, "Fehler beim Laden"));
     }
   };
 
@@ -25,7 +26,7 @@ export default function UserList() {
       await UserApi.remove(id);
       await load();
     } catch (e) {
-      setError(e.response?.data || "Löschen fehlgeschlagen (evtl. noch UserManga-Referenzen)");
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 
@@ -47,18 +48,20 @@ export default function UserList() {
             <th>ID</th>
             <th>Username</th>
             <th>Email</th>
+            <th>Rolle</th>
             <th>Aktion</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.id}</td>
-              <td>{u.username}</td>
-              <td>{u.email}</td>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.username}</td>
+              <td>{user.email}</td>
+              <td>{user.role}</td>
               <td>
-                <Link to={`/users/${u.id}/edit`}>Edit</Link>{" "}
-                <button onClick={() => onDelete(u.id)}>Delete</button>
+                <Link to={`/users/${user.id}/edit`}>Edit</Link>{" "}
+                <button onClick={() => onDelete(user.id)}>Delete</button>
               </td>
             </tr>
           ))}

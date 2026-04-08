@@ -1,41 +1,37 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { api, getApiErrorMessage } from "../../api/client";
 import { MangaApi } from "../../api/mangaApi";
-import { api } from "../../api/client";
 import { validateMangaForm } from "./mangaUtils";
 
 export default function MangaEdit() {
   const { id } = useParams();
   const nav = useNavigate();
-
   const [title, setTitle] = useState("");
   const [volume, setVolume] = useState(1);
   const [categoryId, setCategoryId] = useState("");
   const [publisherId, setPublisherId] = useState("");
-
   const [categories, setCategories] = useState([]);
   const [publishers, setPublishers] = useState([]);
-
   const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [m, cats, pubs] = await Promise.all([
+        const [manga, categoriesResponse, publishersResponse] = await Promise.all([
           MangaApi.get(id),
-          api.get("/categories").then((r) => r.data),
-          api.get("/publishers").then((r) => r.data),
+          api.get("/categories").then((response) => response.data),
+          api.get("/publishers").then((response) => response.data),
         ]);
 
-        setCategories(cats);
-        setPublishers(pubs);
-
-        setTitle(m.title || "");
-        setVolume(m.volume || 1);
-        setCategoryId(String(m.category?.id ?? ""));
-        setPublisherId(String(m.publisher?.id ?? ""));
+        setCategories(categoriesResponse);
+        setPublishers(publishersResponse);
+        setTitle(manga.title || "");
+        setVolume(manga.volume || 1);
+        setCategoryId(String(manga.category?.id ?? ""));
+        setPublisherId(String(manga.publisher?.id ?? ""));
       } catch (e) {
-        setError(e.response?.data || "Fehler beim Laden");
+        setError(getApiErrorMessage(e, "Fehler beim Laden"));
       }
     };
 
@@ -61,7 +57,7 @@ export default function MangaEdit() {
       });
       nav("/mangas");
     } catch (e2) {
-      setError(e2.response?.data || "Fehler beim Speichern");
+      setError(getApiErrorMessage(e2, "Fehler beim Speichern"));
     }
   };
 
@@ -85,9 +81,9 @@ export default function MangaEdit() {
           Kategorie
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
             <option value="">-- waehlen --</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
               </option>
             ))}
           </select>
@@ -97,9 +93,9 @@ export default function MangaEdit() {
           Verlag
           <select value={publisherId} onChange={(e) => setPublisherId(e.target.value)}>
             <option value="">-- waehlen --</option>
-            {publishers.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
+            {publishers.map((publisher) => (
+              <option key={publisher.id} value={publisher.id}>
+                {publisher.name}
               </option>
             ))}
           </select>

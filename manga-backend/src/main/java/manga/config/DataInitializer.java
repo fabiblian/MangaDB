@@ -14,36 +14,57 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initializeUsers(UserRepository userRepository, UserService userService) {
         return args -> {
-            for (User user : userRepository.findAll()) {
-                boolean changed = false;
-
-                if (user.getRole() == null) {
-                    user.setRole(Role.USER);
-                    changed = true;
-                }
-
-                if (user.getPassword() == null || user.getPassword().isBlank() || !user.getPassword().startsWith("$2")) {
-                    String defaultPassword = "admin".equalsIgnoreCase(user.getUsername())
-                            ? UserService.DEFAULT_ADMIN_PASSWORD
-                            : UserService.DEFAULT_USER_PASSWORD;
-                    user.setPassword(userService.encodePassword(defaultPassword));
-                    changed = true;
-                }
-
-                if (changed) {
-                    userRepository.save(user);
-                }
-            }
-
-            if (userRepository.findByUsernameIgnoreCase("admin").isEmpty()) {
-                User admin = new User(
-                        "admin",
-                        "admin@manga.local",
-                        userService.encodePassword(UserService.DEFAULT_ADMIN_PASSWORD),
-                        Role.ADMIN
-                );
-                userRepository.save(admin);
-            }
+            upsertDemoUser(
+                    userRepository,
+                    userService,
+                    "admin",
+                    "admin@manga.local",
+                    UserService.DEFAULT_ADMIN_PASSWORD,
+                    Role.ADMIN
+            );
+            upsertDemoUser(
+                    userRepository,
+                    userService,
+                    "hans",
+                    "hans@mail.com",
+                    UserService.DEFAULT_USER_PASSWORD,
+                    Role.USER
+            );
+            upsertDemoUser(
+                    userRepository,
+                    userService,
+                    "tom",
+                    "tom@mail.com",
+                    UserService.DEFAULT_USER_PASSWORD,
+                    Role.USER
+            );
+            upsertDemoUser(
+                    userRepository,
+                    userService,
+                    "marco",
+                    "marco@mail.com",
+                    UserService.DEFAULT_USER_PASSWORD,
+                    Role.USER
+            );
         };
+    }
+
+    private void upsertDemoUser(
+            UserRepository userRepository,
+            UserService userService,
+            String username,
+            String email,
+            String rawPassword,
+            Role role
+    ) {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseGet(User::new);
+
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setRole(role);
+        user.setPassword(userService.encodePassword(rawPassword));
+
+        userRepository.save(user);
     }
 }

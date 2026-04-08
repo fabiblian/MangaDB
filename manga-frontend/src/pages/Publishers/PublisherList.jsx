@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getApiErrorMessage } from "../../api/client";
 import { PublisherApi } from "../../api/publisherApi";
-
-function getErrorMessage(e, fallback) {
-  const data = e?.response?.data;
-  if (!data) return fallback;
-  if (typeof data === "string") return data;
-  if (typeof data.message === "string") return data.message;
-  if (typeof data.error === "string") return data.error;
-  return fallback;
-}
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function PublisherList() {
+  const { user } = useAuth();
   const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState("");
+  const isAdmin = user?.role === "ADMIN";
 
   const load = async () => {
     setError("");
     try {
       setPublishers(await PublisherApi.list());
     } catch (e) {
-      setError(getErrorMessage(e, "Fehler beim Laden"));
+      setError(getApiErrorMessage(e, "Fehler beim Laden"));
     }
   };
 
@@ -34,7 +29,7 @@ export default function PublisherList() {
       await PublisherApi.remove(id);
       await load();
     } catch (e) {
-      setError(getErrorMessage(e, "Loeschen fehlgeschlagen (evtl. noch Manga-Referenzen)"));
+      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
     }
   };
 
@@ -43,9 +38,11 @@ export default function PublisherList() {
       <div className="page-head">
         <h2>Verlage</h2>
         <div className="page-actions">
-          <Link className="action-link" to="/publishers/new">
-            Verlag Neu
-          </Link>
+          {isAdmin ? (
+            <Link className="action-link" to="/publishers/new">
+              Verlag Neu
+            </Link>
+          ) : null}
         </div>
       </div>
       {error && <div style={{ color: "red", marginBottom: 12 }}>{String(error)}</div>}
@@ -59,13 +56,19 @@ export default function PublisherList() {
           </tr>
         </thead>
         <tbody>
-          {publishers.map((p) => (
-            <tr key={p.id}>
-              <td>{p.id}</td>
-              <td>{p.name}</td>
+          {publishers.map((publisher) => (
+            <tr key={publisher.id}>
+              <td>{publisher.id}</td>
+              <td>{publisher.name}</td>
               <td>
-                <Link to={`/publishers/${p.id}/edit`}>Edit</Link>{" "}
-                <button onClick={() => onDelete(p.id)}>Delete</button>
+                {isAdmin ? (
+                  <>
+                    <Link to={`/publishers/${publisher.id}/edit`}>Edit</Link>{" "}
+                    <button onClick={() => onDelete(publisher.id)}>Delete</button>
+                  </>
+                ) : (
+                  <span>Nur Lesen</span>
+                )}
               </td>
             </tr>
           ))}

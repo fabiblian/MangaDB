@@ -1,32 +1,32 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../api/client";
+import { api, getApiErrorMessage } from "../../api/client";
 import { UserMangaApi } from "../../api/userMangaApi";
 
 const STATUS_VALUES = ["PLANNED", "READING", "COMPLETED", "DROPPED"];
 
 export default function UserMangaForm() {
   const nav = useNavigate();
-
   const [users, setUsers] = useState([]);
   const [mangas, setMangas] = useState([]);
-
   const [userId, setUserId] = useState("");
   const [mangaId, setMangaId] = useState("");
   const [status, setStatus] = useState("");
   const [rating, setRating] = useState("");
   const [note, setNote] = useState("");
-
   const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [u, m] = await Promise.all([api.get("/users").then((r) => r.data), api.get("/mangas").then((r) => r.data)]);
-        setUsers(u);
-        setMangas(m);
+        const [loadedUsers, loadedMangas] = await Promise.all([
+          api.get("/users").then((response) => response.data),
+          api.get("/mangas").then((response) => response.data),
+        ]);
+        setUsers(loadedUsers);
+        setMangas(loadedMangas);
       } catch (e) {
-        setError(e.response?.data || "Fehler beim Laden von Users/Mangas");
+        setError(getApiErrorMessage(e, "Fehler beim Laden von Users/Mangas"));
       }
     };
     load();
@@ -38,8 +38,10 @@ export default function UserMangaForm() {
     if (!status) return "Status ist Pflicht";
     if (!STATUS_VALUES.includes(status)) return "Ungültiger Status";
     if (rating !== "") {
-      const r = Number(rating);
-      if (Number.isNaN(r) || r < 0 || r > 10) return "Rating muss zwischen 0 und 10 sein";
+      const parsedRating = Number(rating);
+      if (Number.isNaN(parsedRating) || parsedRating < 0 || parsedRating > 10) {
+        return "Rating muss zwischen 0 und 10 sein";
+      }
     }
     if (note.length > 255) return "Note max 255 Zeichen";
     return "";
@@ -67,7 +69,7 @@ export default function UserMangaForm() {
       await UserMangaApi.create(payload);
       nav("/user-manga");
     } catch (e2) {
-      setError(e2.response?.data || "Fehler beim Speichern (evtl. Duplikat user+manga)");
+      setError(getApiErrorMessage(e2, "Fehler beim Speichern"));
     }
   };
 
@@ -81,9 +83,9 @@ export default function UserMangaForm() {
           User*
           <select value={userId} onChange={(e) => setUserId(e.target.value)}>
             <option value="">-- wählen --</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.username} (ID {u.id})
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.username} (ID {user.id})
               </option>
             ))}
           </select>
@@ -93,9 +95,9 @@ export default function UserMangaForm() {
           Manga*
           <select value={mangaId} onChange={(e) => setMangaId(e.target.value)}>
             <option value="">-- wählen --</option>
-            {mangas.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.title} #{m.volume} (ID {m.id})
+            {mangas.map((manga) => (
+              <option key={manga.id} value={manga.id}>
+                {manga.title} #{manga.volume} (ID {manga.id})
               </option>
             ))}
           </select>
@@ -105,9 +107,9 @@ export default function UserMangaForm() {
           Status*
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">-- wählen --</option>
-            {STATUS_VALUES.map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {STATUS_VALUES.map((entry) => (
+              <option key={entry} value={entry}>
+                {entry}
               </option>
             ))}
           </select>

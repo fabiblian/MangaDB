@@ -1,14 +1,26 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../src/contexts/AuthContext";
 
-const links = [
+const publicLinks = [
+  { to: "/login", label: "Login" },
+  { to: "/register", label: "Register" },
+];
+
+const userLinks = [
   { to: "/mangas", label: "Mangas" },
-  { to: "/users", label: "Users" },
   { to: "/user-manga", label: "Status" },
   { to: "/publishers", label: "Verlage" },
   { to: "/categories", label: "Kategorien" },
 ];
 
+const adminLinks = [{ to: "/users", label: "Users" }];
+
 export default function NavBar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const links = isAuthenticated
+    ? [...userLinks, ...(user?.role === "ADMIN" ? adminLinks : [])]
+    : publicLinks;
+
   return (
     <header className="topbar">
       <div className="topbar-inner">
@@ -24,6 +36,18 @@ export default function NavBar() {
             </NavLink>
           ))}
         </nav>
+        <div className="nav-links" style={{ marginLeft: "auto" }}>
+          {isAuthenticated ? (
+            <>
+              <span className="nav-link">
+                {user?.username} ({user?.role})
+              </span>
+              <button type="button" className="nav-link" onClick={logout}>
+                Logout
+              </button>
+            </>
+          ) : null}
+        </div>
       </div>
     </header>
   );

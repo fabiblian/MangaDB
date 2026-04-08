@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getApiErrorMessage } from "../../api/client";
 import { UserMangaApi } from "../../api/userMangaApi";
 
 export default function UserMangaList() {
@@ -11,7 +12,7 @@ export default function UserMangaList() {
     try {
       setItems(await UserMangaApi.list());
     } catch (e) {
-      setError(e.response?.data || "Fehler beim Laden");
+      setError(getApiErrorMessage(e, "Fehler beim Laden"));
     }
   };
 
@@ -25,7 +26,7 @@ export default function UserMangaList() {
       await UserMangaApi.remove(id);
       await load();
     } catch (e) {
-      setError(e.response?.data || "Löschen fehlgeschlagen");
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 
@@ -54,31 +55,26 @@ export default function UserMangaList() {
           </tr>
         </thead>
         <tbody>
-          {items.map((x) => (
-            <tr key={x.id}>
-              <td>{x.id}</td>
+          {items.map((item) => (
+            <tr key={item.id}>
+              <td>{item.id}</td>
               <td>
-                {x.user?.username} (ID {x.user?.id})
+                {item.user?.username} (ID {item.user?.id})
               </td>
               <td>
-                {x.manga?.title} #{x.manga?.volume} (ID {x.manga?.id})
+                {item.manga?.title} #{item.manga?.volume} (ID {item.manga?.id})
               </td>
-              <td>{x.status}</td>
-              <td>{x.rating ?? ""}</td>
-              <td>{x.note ?? ""}</td>
+              <td>{item.status}</td>
+              <td>{item.rating ?? ""}</td>
+              <td>{item.note ?? ""}</td>
               <td>
-                <Link to={`/user-manga/${x.id}/edit`}>Edit</Link>{" "}
-                <button onClick={() => onDelete(x.id)}>Delete</button>
+                <Link to={`/user-manga/${item.id}/edit`}>Edit</Link>{" "}
+                <button onClick={() => onDelete(item.id)}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      <p style={{ marginTop: 12 }}>
-        Tipp: Wenn du einen Manga/User nicht löschen kannst wegen FK, lösche zuerst die passenden Status-Einträge
-        hier.
-      </p>
     </div>
   );
 }

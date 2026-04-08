@@ -9,12 +9,14 @@ export default function MangaList() {
   const { user } = useAuth();
   const [mangas, setMangas] = useState([]);
   const [error, setError] = useState("");
+  const [selectedKey, setSelectedKey] = useState("");
   const isAdmin = user?.role === "ADMIN";
 
   const load = async () => {
     setError("");
     try {
-      setMangas(await MangaApi.list());
+      const items = await MangaApi.list();
+      setMangas(items);
     } catch (e) {
       setError(getApiErrorMessage(e, "Fehler beim Laden"));
     }
@@ -36,6 +38,19 @@ export default function MangaList() {
   };
 
   const groupedMangas = buildGroupedMangas(mangas);
+  const selectedManga =
+    groupedMangas.find((grouped) => grouped.key === selectedKey) ?? groupedMangas[0] ?? null;
+
+  useEffect(() => {
+    if (!groupedMangas.length) {
+      setSelectedKey("");
+      return;
+    }
+
+    if (!selectedKey || !groupedMangas.some((grouped) => grouped.key === selectedKey)) {
+      setSelectedKey(groupedMangas[0].key);
+    }
+  }, [groupedMangas, selectedKey]);
 
   return (
     <div>
@@ -51,39 +66,95 @@ export default function MangaList() {
       </div>
       {error && <div style={{ color: "red", marginBottom: 12 }}>{String(error)}</div>}
 
-      <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Titel</th>
-            <th>Max Band</th>
-            <th>Kategorie</th>
-            <th>Verlag</th>
-            <th>Aktion</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groupedMangas.map((grouped) => (
-            <tr key={grouped.key}>
-              <td>{grouped.representative.id}</td>
-              <td>{grouped.title}</td>
-              <td>{grouped.maxVolume}</td>
-              <td>{grouped.representative.category?.name}</td>
-              <td>{grouped.representative.publisher?.name}</td>
-              <td>
-                {isAdmin ? (
-                  <>
-                    <Link to={`/mangas/${grouped.representative.id}/edit`}>Edit</Link>{" "}
-                    <button onClick={() => onDelete(grouped.representative.id)}>Delete</button>
-                  </>
+      <div className="manga-list-layout">
+        <div className="manga-list-table-wrap">
+          <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Titel</th>
+                <th>Max Band</th>
+                <th>Kategorie</th>
+                <th>Verlag</th>
+                <th>Aktion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groupedMangas.map((grouped) => {
+                const isSelected = grouped.key === selectedManga?.key;
+
+                return (
+                  <tr
+                    key={grouped.key}
+                    className={isSelected ? "manga-row-selected" : ""}
+                    onClick={() => setSelectedKey(grouped.key)}
+                  >
+                    <td>{grouped.representative.id}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="manga-title-button"
+                        onClick={() => setSelectedKey(grouped.key)}
+                      >
+                        {grouped.title}
+                      </button>
+                    </td>
+                    <td>{grouped.maxVolume}</td>
+                    <td>{grouped.representative.category?.name}</td>
+                    <td>{grouped.representative.publisher?.name}</td>
+                    <td>
+                      {isAdmin ? (
+                        <>
+                          <Link to={`/mangas/${grouped.representative.id}/edit`}>Edit</Link>{" "}
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onDelete(grouped.representative.id);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      ) : (
+                        <span>Nur Lesen</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <aside className="manga-detail-card">
+          {selectedManga ? (
+            <>
+              <p className="manga-detail-eyebrow">Ausgewaehltes Cover</p>
+              <h3>{selectedManga.title}</h3>
+              <p>
+                  {selectedManga.representative.category?.name}
+              </p>
+              <div className="manga-cover-frame">
+                {selectedManga.representative.imageUrl ? (
+                  <img
+                    className="manga-cover-image"
+                    src={selectedManga.representative.imageUrl}
+                    alt={`Cover von ${selectedManga.title}`}
+                  />
                 ) : (
-                  <span>Nur Lesen</span>
+                  <div className="manga-cover-placeholder">Kein Cover hinterlegt</div>
                 )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+              <p className="manga-detail-meta">
+                Verlag: {selectedManga.representative.publisher?.name}
+              </p>
+            </>
+          ) : (
+            <p>Keine Mangas vorhanden.</p>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }

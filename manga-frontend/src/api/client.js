@@ -2,7 +2,7 @@ import axios from "axios";
 import { clearAuthStorage, getStoredToken, getApiErrorMessage } from "../utils/authUtils";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { "Content-Type": "application/json" },
   timeout: 10000,
 });
@@ -32,3 +32,6 @@ api.interceptors.response.use(
 );
 
 export { getApiErrorMessage };
+  
+  
+export default api;

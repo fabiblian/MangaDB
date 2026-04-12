@@ -10,6 +10,37 @@
   background: rgba(11, 15, 35, 0.76);
   border-bottom: 1px solid rgba(52, 61, 126, 0.95);
 }
+.login:hover{
+  background-color: #27ae60;
+
+}
+
+.login{
+
+color: white; 
+  background-color: #2ecc71; /* Ein schöneres, helleres Grün */
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+
+  /* Form & Abstände */
+  border: none;
+  border-radius: 8px; /* Abgerundete Ecken wirken moderner */
+  padding: 15px 32px;
+  display: inline-block;
+  margin: 4px 2px;
+  
+  /* Interaktion */
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
+}
+
+
+
+.manga{
+  text-shadow: 2px 2px brown;
+}
 
 .topbar-inner {
   width: min(1180px, calc(100% - 2rem));
@@ -42,6 +73,19 @@
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+
+
+
+
+.nav-link logout-btn{
+  background-color: '#ff4d4d';
+  color: 'white';
+  border: 'none';
+  padding: '8px 1px';
+  border-radius: '4px';
+  cursor: 'pointer';
+
+}
 .nav-link:hover {
   background: #1a2150;
   border-color: #3847a8;

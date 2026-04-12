@@ -22,12 +22,25 @@ test("validateMangaForm: gueltige Daten geben leeren String zurueck", () => {
   assert.equal(msg, "");
 });
 
+test("validateMangaForm:gültiges Volume muss grösser als 2 sein", () => {
+  const msg = validateMangaForm({ title: "Sheinen", volume: 3, categoryId: "4", publisherId: "6" });
+  assert.equal(msg, "");
+
+})
+
+
 test("buildGroupedMangas: gruppiert Titel und nimmt maxVolume", () => {
   const items = [
     { id: 1, title: "Naruto", volume: 1 },
     { id: 2, title: "Naruto", volume: 4 },
     { id: 3, title: "Bleach", volume: 2 },
   ];
+
+
+  test("validateMangaFromt:Verlag ist Pflicht", () => {
+    const msg = validateMangaForm({ title: "Demon Slayer", volume: 1, categoryId: "4", publisherId: "6" });
+    assert.equal(msg, "");
+  });
 
   const result = buildGroupedMangas(items);
   const naruto = result.find((x) => x.key === "naruto");

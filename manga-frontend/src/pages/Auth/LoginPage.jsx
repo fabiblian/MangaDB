@@ -14,9 +14,42 @@ export default function LoginPage() {
     setError("");
     setIsLoading(true);
 
+    const trimmedUsername = form.usernameOrEmail.trim();
+    const trimmedpassword = form.password.trim();
+
+
+
+    if (trimmedUsername.length < 3 || trimmedUsername == null) {
+      setError("Username ist zu kurz oder nicht vorhanden");
+      alert("Bitte ein gültiger Username eingeben");
+      return;
+    }
+    setIsLoading(true);
+
+
+    if (trimmedpassword.length < 6 || trimmedpassword == null) {
+      setError("Password ist zu kurz");
+      alert("Bitte ein gültiges Password eingeben");
+      return;
+
+    }
+
+
+
+    setIsLoading(true);
+
+
+
+
+
+
+
+
+
     try {
       await login(form.usernameOrEmail, form.password);
       navigate("/mangas");
+
     } catch (err) {
       setError(err.message || "Login fehlgeschlagen");
     } finally {
@@ -30,27 +63,37 @@ export default function LoginPage() {
       {error ? <div style={{ color: "red", marginBottom: 12 }}>{error}</div> : null}
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="usernameOrEmail">Username oder Email</label>
+          <label htmlFor="usernameOrEmail">Username/E-Mail*</label>
           <input
             id="usernameOrEmail"
             type="text"
             value={form.usernameOrEmail}
             onChange={(event) => setForm((current) => ({ ...current, usernameOrEmail: event.target.value }))}
             placeholder="admin oder admin@manga.local"
+            required="elias.kaiser@gmx.ch"
           />
         </div>
         <div>
-          <label htmlFor="password">Passwort</label>
+          <label htmlFor="password">Passwort*</label>
           <input
             id="password"
             type="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-            placeholder="Mindestens 6 Zeichen"
+            placeholder="Bitte ein gültiges Password eingeben"
+            required="momo9010"
           />
         </div>
-        <button type="submit" disabled={isLoading}>
+        <button className="login" type="submit" disabled={isLoading}>
           {isLoading ? "Logge ein..." : "Einloggen"}
+        </button>
+
+
+        <button type="submit" >Zu den Mangas <Link to="/mangas"></Link>
+
+
+
+
         </button>
       </form>
       <p>

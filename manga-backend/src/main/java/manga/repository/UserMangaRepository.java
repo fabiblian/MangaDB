@@ -16,4 +16,6 @@ public interface UserMangaRepository extends JpaRepository<UserManga, Long> {
     List<UserManga> findAllByUserId(Integer userId);
 
     Optional<UserManga> findByIdAndUserId(Long id, Integer userId);
+
+    Optional<UserManga> findByUserIdAndMangaId(Integer userId, Integer mangaId);
 }

@@ -15,6 +15,7 @@ import UserEdit from "./pages/Users/UserEdit";
 import UserMangaList from "./pages/UserManga/UserMangaList";
 import UserMangaForm from "./pages/UserManga/UserMangaForm";
 import UserMangaEdit from "./pages/UserManga/UserMangaEdit";
+import ReadingSessionPage from "./pages/ReadingSessions/ReadingSessionPage";
 import PublisherList from "./pages/Publishers/PublisherList";
 import PublisherForm from "./pages/Publishers/PublisherForm";
 import PublisherEdit from "./pages/Publishers/PublisherEdit";
@@ -112,6 +113,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <UserMangaEdit />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/reading-sessions"
+            element={
+              <ProtectedRoute>
+                <ReadingSessionPage />
               </ProtectedRoute>
             }
           />

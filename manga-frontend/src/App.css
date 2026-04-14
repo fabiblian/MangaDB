@@ -198,6 +198,22 @@
   gap: 1rem;
 }
 
+.reading-session-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.reading-session-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.reading-session-form-note {
+  grid-column: 1 / -1;
+}
+
 .leaderboard-subtitle {
   margin: 0.35rem 0 0;
   color: #b3bdfa;

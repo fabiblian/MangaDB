@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"Alle Packages","u":"allpackages-index.html"},{"l":"manga"},{"l":"manga.model"},{"l":"manga.repository"}];updateSearchResults();

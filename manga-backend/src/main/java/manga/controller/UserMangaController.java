@@ -1,11 +1,11 @@
 package manga.controller;
 
-import jakarta.validation.Valid;
 import manga.model.UserManga;
-import manga.repository.UserMangaRepository;
+import manga.service.UserMangaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,47 +14,54 @@ import java.util.List;
 @RequestMapping("/user-manga")
 public class UserMangaController {
 
-    private final UserMangaRepository userMangaRepository;
+    private final UserMangaService userMangaService;
 
-    public UserMangaController(UserMangaRepository userMangaRepository) {
-        this.userMangaRepository = userMangaRepository;
+    public UserMangaController(UserMangaService userMangaService) {
+        this.userMangaService = userMangaService;
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public List<UserManga> getAll() {
-        return userMangaRepository.findAll();
+    public List<UserManga> getAll(Authentication authentication) {
+        return userMangaService.findAll(authentication.getName(), isAdmin(authentication));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<?> create(@Valid @RequestBody UserManga userManga) {
-        if (userMangaRepository.existsByUserIdAndMangaId(
-                userManga.getUser().getId(),
-                userManga.getManga().getId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Dieser Manga hat schon einen Eintrag");
+    public ResponseEntity<?> create(@RequestBody UserManga userManga, Authentication authentication) {
+        try {
+            return ResponseEntity.ok(userMangaService.create(userManga, authentication.getName(), isAdmin(authentication)));
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         }
-
-        return ResponseEntity.ok(userMangaRepository.save(userManga));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<UserManga> update(@PathVariable Long id, @Valid @RequestBody UserManga userManga) {
-        if (!userMangaRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @RequestBody UserManga userManga,
+                                    Authentication authentication) {
+        try {
+            UserManga updated = userMangaService.update(id, userManga, authentication.getName(), isAdmin(authentication));
+            return updated == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(updated);
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         }
-        userManga.setId(id);
-        return ResponseEntity.ok(userMangaRepository.save(userManga));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        if (!userMangaRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UserManga not found");
+    public ResponseEntity<?> delete(@PathVariable Long id, Authentication authentication) {
+        try {
+            userMangaService.delete(id, authentication.getName(), isAdmin(authentication));
+            return ResponseEntity.noContent().build();
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
-        userMangaRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    }
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 }

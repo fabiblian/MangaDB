@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getApiErrorMessage } from "../../api/client";
+import { useAuth } from "../../contexts/AuthContext";
 import { UserMangaApi } from "../../api/userMangaApi";
 
 const STATUS_VALUES = ["PLANNED", "READING", "COMPLETED", "DROPPED"];
@@ -7,35 +9,41 @@ const STATUS_VALUES = ["PLANNED", "READING", "COMPLETED", "DROPPED"];
 export default function UserMangaEdit() {
   const { id } = useParams();
   const nav = useNavigate();
+  const { user } = useAuth();
 
   const [status, setStatus] = useState("");
   const [rating, setRating] = useState("");
   const [note, setNote] = useState("");
-
   const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
       try {
         const items = await UserMangaApi.list();
-        const x = items.find((i) => String(i.id) === String(id));
-        if (!x) {
+        const entry = items.find((item) => String(item.id) === String(id));
+        if (!entry) {
+          if (user?.role !== "ADMIN") {
+            nav("/forbidden");
+            return;
+          }
+
           setError("UserManga not found");
           return;
         }
-        setStatus(x.status || "");
-        setRating(x.rating ?? "");
-        setNote(x.note ?? "");
+
+        setStatus(entry.status || "");
+        setRating(entry.rating ?? "");
+        setNote(entry.note ?? "");
       } catch (e) {
-        setError(e.response?.data || "Fehler beim Laden");
+        setError(getApiErrorMessage(e, "Fehler beim Laden"));
       }
     };
     load();
-  }, [id]);
+  }, [id, nav, user?.role]);
 
   const validate = () => {
     if (!status) return "Status ist Pflicht";
-    if (!STATUS_VALUES.includes(status)) return "Ungültiger Status";
+    if (!STATUS_VALUES.includes(status)) return "Ungueltiger Status";
     if (rating !== "") {
       const r = Number(rating);
       if (Number.isNaN(r) || r < 0 || r > 10) return "Rating muss zwischen 0 und 10 sein";
@@ -62,7 +70,13 @@ export default function UserMangaEdit() {
       });
       nav("/user-manga");
     } catch (e2) {
-      setError(e2.response?.data || "Fehler beim Speichern");
+      const message = getApiErrorMessage(e2, "Fehler beim Speichern");
+      if (message === "Zugriff verweigert") {
+        nav("/forbidden");
+        return;
+      }
+
+      setError(message);
     }
   };
 
@@ -75,7 +89,7 @@ export default function UserMangaEdit() {
         <label>
           Status*
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">-- wählen --</option>
+            <option value="">-- waehlen --</option>
             {STATUS_VALUES.map((s) => (
               <option key={s} value={s}>
                 {s}

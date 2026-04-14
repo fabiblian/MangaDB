@@ -9,6 +9,7 @@ export default function PublisherList() {
   const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState("");
   const isAdmin = user?.role === "ADMIN";
+  const showActionColumn = isAdmin;
 
   const load = async () => {
     setError("");
@@ -52,7 +53,7 @@ export default function PublisherList() {
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Aktion</th>
+            {showActionColumn ? <th>Aktion</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -60,16 +61,16 @@ export default function PublisherList() {
             <tr key={publisher.id}>
               <td>{publisher.id}</td>
               <td>{publisher.name}</td>
-              <td>
-                {isAdmin ? (
+              {showActionColumn ? (
+                <td>
+                  {isAdmin ? (
                   <>
                     <Link to={`/publishers/${publisher.id}/edit`}>Edit</Link>{" "}
                     <button onClick={() => onDelete(publisher.id)}>Delete</button>
                   </>
-                ) : (
-                  <span>Nur Lesen</span>
-                )}
-              </td>
+                  ) : null}
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getApiErrorMessage } from "../../api/client";
+import { useAuth } from "../../contexts/AuthContext";
 import { UserMangaApi } from "../../api/userMangaApi";
 
 export default function UserMangaList() {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [error, setError] = useState("");
+  const isAdmin = user?.role === "ADMIN";
+  const showUserColumn = isAdmin;
+  const showActionColumn = items.length > 0;
 
   const load = async () => {
     setError("");
@@ -21,12 +26,12 @@ export default function UserMangaList() {
   }, []);
 
   const onDelete = async (id) => {
-    if (!confirm("Status-Eintrag wirklich löschen?")) return;
+    if (!confirm("Status-Eintrag wirklich loeschen?")) return;
     try {
       await UserMangaApi.remove(id);
       await load();
     } catch (e) {
-      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
+      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
     }
   };
 
@@ -46,31 +51,35 @@ export default function UserMangaList() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>User</th>
+            {showUserColumn ? <th>User</th> : null}
             <th>Manga</th>
             <th>Status</th>
             <th>Rating</th>
             <th>Note</th>
-            <th>Aktion</th>
+            {showActionColumn ? <th>Aktion</th> : null}
           </tr>
         </thead>
         <tbody>
           {items.map((item) => (
             <tr key={item.id}>
               <td>{item.id}</td>
-              <td>
-                {item.user?.username} (ID {item.user?.id})
-              </td>
+              {showUserColumn ? (
+                <td>
+                  {item.user?.username} (ID {item.user?.id})
+                </td>
+              ) : null}
               <td>
                 {item.manga?.title} #{item.manga?.volume} (ID {item.manga?.id})
               </td>
               <td>{item.status}</td>
               <td>{item.rating ?? ""}</td>
               <td>{item.note ?? ""}</td>
-              <td>
-                <Link to={`/user-manga/${item.id}/edit`}>Edit</Link>{" "}
-                <button onClick={() => onDelete(item.id)}>Delete</button>
-              </td>
+              {showActionColumn ? (
+                <td>
+                  <Link to={`/user-manga/${item.id}/edit`}>Edit</Link>{" "}
+                  <button onClick={() => onDelete(item.id)}>Delete</button>
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

@@ -10,6 +10,7 @@ import manga.model.UserManga;
 import manga.repository.CategoryRepository;
 import manga.repository.MangaRepository;
 import manga.repository.PublisherRepository;
+import manga.repository.ReadingSessionRepository;
 import manga.repository.UserMangaRepository;
 import manga.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,10 +47,14 @@ class LeaderboardControllerIntegrationTest {
     @Autowired
     private PublisherRepository publisherRepository;
 
+    @Autowired
+    private ReadingSessionRepository readingSessionRepository;
+
     private Integer annaId;
 
     @BeforeEach
     void setUp() {
+        readingSessionRepository.deleteAll();
         userMangaRepository.deleteAll();
         mangaRepository.deleteAll();
         userRepository.deleteAll();

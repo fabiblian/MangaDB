@@ -10,6 +10,7 @@ const userLinks = [
   { to: "/mangas", label: "Mangas" },
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/user-manga", label: "Status" },
+  { to: "/reading-sessions", label: "Sessions" },
   { to: "/publishers", label: "Verlage" },
   { to: "/categories", label: "Kategorien" },
 ];

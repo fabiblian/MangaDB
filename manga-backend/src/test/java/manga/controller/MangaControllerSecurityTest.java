@@ -6,6 +6,7 @@ import manga.model.Publisher;
 import manga.repository.CategoryRepository;
 import manga.repository.MangaRepository;
 import manga.repository.PublisherRepository;
+import manga.repository.ReadingSessionRepository;
 import manga.repository.UserMangaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,11 +41,15 @@ class MangaControllerSecurityTest {
     @Autowired
     private UserMangaRepository userMangaRepository;
 
+    @Autowired
+    private ReadingSessionRepository readingSessionRepository;
+
     private Integer categoryId;
     private Integer publisherId;
 
     @BeforeEach
     void setUp() {
+        readingSessionRepository.deleteAll();
         userMangaRepository.deleteAll();
         mangaRepository.deleteAll();
         categoryRepository.deleteAll();

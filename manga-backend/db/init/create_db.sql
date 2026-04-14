@@ -46,6 +46,19 @@ CREATE TABLE IF NOT EXISTS user_manga (
   CONSTRAINT uq_user_manga UNIQUE (user_id, manga_id)
 );
 
+CREATE TABLE IF NOT EXISTS reading_sessions (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  manga_id INT NOT NULL,
+  read_at DATETIME NOT NULL,
+  resulting_status ENUM('PLANNED', 'READING', 'COMPLETED', 'DROPPED') NOT NULL,
+  note VARCHAR(255),
+  CONSTRAINT fk_reading_session_user
+    FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_reading_session_manga
+    FOREIGN KEY (manga_id) REFERENCES mangas(id)
+);
+
 INSERT IGNORE INTO categories (name) VALUES
 ('Shonen'),
 ('Seinen'),
@@ -97,3 +110,7 @@ INSERT IGNORE INTO user_manga (user_id, manga_id, status, rating, note) VALUES
 (2, 3, 'PLANNED', NULL, 'Als naechstes'),
 (3, 4, 'DROPPED', 4, 'Nicht mein Stil'),
 (2, 5, 'COMPLETED', 8, 'Sehr spannend');
+
+INSERT IGNORE INTO reading_sessions (id, user_id, manga_id, read_at, resulting_status, note) VALUES
+(1, 1, 2, '2026-04-15 20:00:00', 'READING', 'Heute weitergelesen'),
+(2, 2, 5, '2026-04-15 21:00:00', 'COMPLETED', 'Band abgeschlossen');

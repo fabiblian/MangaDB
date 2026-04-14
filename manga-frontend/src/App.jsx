@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegisterPage from "./pages/Auth/RegisterPage";
 import ForbiddenPage from "./pages/Auth/ForbiddenPage";
+import LeaderboardPage from "./pages/Leaderboard/LeaderboardPage";
 import MangaList from "./pages/Mangas/MangaList";
 import MangaNew from "./pages/Mangas/MangaNew";
 import MangaEdit from "./pages/Mangas/MangaEdit";
@@ -30,6 +31,15 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
+
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/mangas"

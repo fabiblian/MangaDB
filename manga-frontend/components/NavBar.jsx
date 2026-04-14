@@ -8,6 +8,7 @@ const publicLinks = [
 
 const userLinks = [
   { to: "/mangas", label: "Mangas" },
+  { to: "/leaderboard", label: "Leaderboard" },
   { to: "/user-manga", label: "Status" },
   { to: "/publishers", label: "Verlage" },
   { to: "/categories", label: "Kategorien" },

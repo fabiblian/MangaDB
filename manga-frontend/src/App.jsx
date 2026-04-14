@@ -19,10 +19,6 @@ import PublisherForm from "./pages/Publishers/PublisherForm";
 import PublisherEdit from "./pages/Publishers/PublisherEdit";
 import CategoryList from "./pages/Categories/CategoryList";
 import CategoryForm from "./pages/Categories/CategoryForm";
-import MangaLeaderboard from "./components/MangaLeaderboard";
-import UserStatsPage from "./components/UserStats";
-import UserStats from "./components/user-stats";
-import MangaLibrarySession from "./components/Mangalibarysession";
 
 export default function App() {
   return (
@@ -35,7 +31,6 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
 
-
           <Route
             path="/mangas"
             element={
@@ -44,48 +39,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-
-          <Route
-            path="/mangalibary"
-            element={
-              <ProtectedRoute>
-                <MangaLibrarySession />
-              </ProtectedRoute>
-            }
-          />
-
-
-
-
-          <Route
-            path="/leaderboard"
-            element={
-              <ProtectedRoute>
-                <MangaLeaderboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/user-stats"
-            element={
-              <ProtectedRoute>
-                <MangaList />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/stats"
-            element={
-              <ProtectedRoute>
-                <UserStatsPage />
-              </ProtectedRoute>
-            }
-          />
-
           <Route
             path="/mangas/new"
             element={

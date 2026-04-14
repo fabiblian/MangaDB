@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { register } from "../../services/authService";
-import { Navigate } from "react-router-dom";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -22,14 +21,7 @@ export default function RegisterPage() {
 
     if (form.password !== form.confirmPassword) {
       setError("Passwörter stimmen nicht überein");
-      alert("Bitte das password erneut eingeben");
       return;
-
-    }
-
-    if (form.password < 6) {
-      setError("Passwörter sind zu kurz");
-      alert("Bitte ein gültiges Password eingeben");
     }
 
     setIsLoading(true);
@@ -71,7 +63,6 @@ export default function RegisterPage() {
             type="email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            required="elias.kaiser@gmx.ch"
           />
         </div>
         <div>
@@ -95,21 +86,10 @@ export default function RegisterPage() {
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Registriere..." : "Registrieren"}
         </button>
-
-        <button type="submit" disabled={isLoading} navigate="/mangas" style={{ color: "orange" }}>Zu den Mangas
-        </button>
-
-
-
-        <button type="submit" disabled={isLoading} navigate="/leaderboard" style={{ color: "green" }}>Zum MangaLeaderboard
-        </button>
       </form>
       <p>
         Bereits registriert? <Link to="/login">Zum Login</Link>
       </p>
-
-
     </section>
-
   );
 }

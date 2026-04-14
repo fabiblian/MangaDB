@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { getApiErrorMessage } from "../../api/client";
 import { LeaderboardApi } from "../../api/leaderboardApi";
 import { useAuth } from "../../contexts/AuthContext";
-import { formatAverageRating } from "./leaderboardUtils";
 
 function StatCard({ label, value }) {
   return (
@@ -65,7 +64,6 @@ export default function LeaderboardPage() {
             <StatCard label="Am Lesen" value={userStats.readingCount} />
             <StatCard label="Geplant" value={userStats.plannedCount} />
             <StatCard label="Abgebrochen" value={userStats.droppedCount} />
-            <StatCard label="Ø Bewertung" value={formatAverageRating(userStats.averageRating)} />
             <StatCard
               label="Dein Rang"
               value={entries.find((entry) => entry.userId === userStats.userId)?.rank ?? "-"}
@@ -90,7 +88,6 @@ export default function LeaderboardPage() {
                 <th>Am Lesen</th>
                 <th>Geplant</th>
                 <th>Abgebrochen</th>
-                <th>Ø Bewertung</th>
               </tr>
             </thead>
             <tbody>
@@ -110,7 +107,6 @@ export default function LeaderboardPage() {
                     <td>{entry.readingCount}</td>
                     <td>{entry.plannedCount}</td>
                     <td>{entry.droppedCount}</td>
-                    <td>{formatAverageRating(entry.averageRating)}</td>
                   </tr>
                 );
               })}

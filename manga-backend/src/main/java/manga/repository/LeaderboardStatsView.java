@@ -13,6 +13,4 @@ public interface LeaderboardStatsView {
     Long getPlannedCount();
 
     Long getDroppedCount();
-
-    Double getAverageRating();
 }

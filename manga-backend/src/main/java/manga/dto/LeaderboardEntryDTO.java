@@ -9,7 +9,6 @@ public class LeaderboardEntryDTO {
     private final Long readingCount;
     private final Long plannedCount;
     private final Long droppedCount;
-    private final Double averageRating;
 
     public LeaderboardEntryDTO(Integer rank, UserStatsDTO stats) {
         this.rank = rank;
@@ -19,7 +18,6 @@ public class LeaderboardEntryDTO {
         this.readingCount = stats.getReadingCount();
         this.plannedCount = stats.getPlannedCount();
         this.droppedCount = stats.getDroppedCount();
-        this.averageRating = stats.getAverageRating();
     }
 
     public Integer getRank() {
@@ -48,9 +46,5 @@ public class LeaderboardEntryDTO {
 
     public Long getDroppedCount() {
         return droppedCount;
-    }
-
-    public Double getAverageRating() {
-        return averageRating;
     }
 }

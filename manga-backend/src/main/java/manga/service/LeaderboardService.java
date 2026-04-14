@@ -46,8 +46,7 @@ public class LeaderboardService {
                 view.getCompletedCount(),
                 view.getReadingCount(),
                 view.getPlannedCount(),
-                view.getDroppedCount(),
-                view.getAverageRating()
+                view.getDroppedCount()
         );
     }
 }

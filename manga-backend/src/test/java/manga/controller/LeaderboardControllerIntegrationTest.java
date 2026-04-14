@@ -104,7 +104,7 @@ class LeaderboardControllerIntegrationTest {
 
     @Test
     @WithMockUser(username = "anna", roles = {"USER"})
-    void getUserStats_shouldReturnAggregatedCountsAndAverageRating() throws Exception {
+    void getUserStats_shouldReturnAggregatedCounts() throws Exception {
         mockMvc.perform(get("/leaderboard/user/{id}/stats", annaId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(annaId))
@@ -112,8 +112,7 @@ class LeaderboardControllerIntegrationTest {
                 .andExpect(jsonPath("$.completedCount").value(2))
                 .andExpect(jsonPath("$.readingCount").value(1))
                 .andExpect(jsonPath("$.plannedCount").value(0))
-                .andExpect(jsonPath("$.droppedCount").value(0))
-                .andExpect(jsonPath("$.averageRating").value(8.0));
+                .andExpect(jsonPath("$.droppedCount").value(0));
     }
 
     private Manga createManga(String title, int volume, Category category, Publisher publisher) {

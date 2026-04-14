@@ -28,8 +28,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                 coalesce(sum(case when um.status = 'COMPLETED' then 1 else 0 end), 0) as completedCount,
                 coalesce(sum(case when um.status = 'READING' then 1 else 0 end), 0) as readingCount,
                 coalesce(sum(case when um.status = 'PLANNED' then 1 else 0 end), 0) as plannedCount,
-                coalesce(sum(case when um.status = 'DROPPED' then 1 else 0 end), 0) as droppedCount,
-                avg(um.rating) as averageRating
+                coalesce(sum(case when um.status = 'DROPPED' then 1 else 0 end), 0) as droppedCount
             from users u
             left join user_manga um on um.user_id = u.id
             group by u.id, u.username
@@ -44,8 +43,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                 coalesce(sum(case when um.status = 'COMPLETED' then 1 else 0 end), 0) as completedCount,
                 coalesce(sum(case when um.status = 'READING' then 1 else 0 end), 0) as readingCount,
                 coalesce(sum(case when um.status = 'PLANNED' then 1 else 0 end), 0) as plannedCount,
-                coalesce(sum(case when um.status = 'DROPPED' then 1 else 0 end), 0) as droppedCount,
-                avg(um.rating) as averageRating
+                coalesce(sum(case when um.status = 'DROPPED' then 1 else 0 end), 0) as droppedCount
             from users u
             left join user_manga um on um.user_id = u.id
             where u.id = :userId

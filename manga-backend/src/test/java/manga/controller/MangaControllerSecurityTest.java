@@ -6,6 +6,7 @@ import manga.model.Publisher;
 import manga.repository.CategoryRepository;
 import manga.repository.MangaRepository;
 import manga.repository.PublisherRepository;
+import manga.repository.UserMangaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +37,15 @@ class MangaControllerSecurityTest {
     @Autowired
     private PublisherRepository publisherRepository;
 
+    @Autowired
+    private UserMangaRepository userMangaRepository;
+
     private Integer categoryId;
     private Integer publisherId;
 
     @BeforeEach
     void setUp() {
+        userMangaRepository.deleteAll();
         mangaRepository.deleteAll();
         categoryRepository.deleteAll();
         publisherRepository.deleteAll();

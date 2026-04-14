@@ -9,6 +9,7 @@ export default function CategoryList() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
   const isAdmin = user?.role === "ADMIN";
+  const showActionColumn = isAdmin;
 
   const load = async () => {
     setError("");
@@ -52,7 +53,7 @@ export default function CategoryList() {
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Aktion</th>
+            {showActionColumn ? <th>Aktion</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -60,7 +61,11 @@ export default function CategoryList() {
             <tr key={category.id}>
               <td>{category.id}</td>
               <td>{category.name}</td>
-              <td>{isAdmin ? <button onClick={() => onDelete(category.id)}>Delete</button> : <span>Nur Lesen</span>}</td>
+              {showActionColumn ? (
+                <td>
+                  {isAdmin ? <button onClick={() => onDelete(category.id)}>Delete</button> : null}
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

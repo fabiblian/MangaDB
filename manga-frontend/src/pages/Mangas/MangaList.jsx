@@ -11,6 +11,7 @@ export default function MangaList() {
   const [error, setError] = useState("");
   const [selectedKey, setSelectedKey] = useState("");
   const isAdmin = user?.role === "ADMIN";
+  const showActionColumn = isAdmin;
 
   const load = async () => {
     setError("");
@@ -76,7 +77,7 @@ export default function MangaList() {
                 <th>Max Band</th>
                 <th>Kategorie</th>
                 <th>Verlag</th>
-                <th>Aktion</th>
+                {showActionColumn ? <th>Aktion</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -102,8 +103,9 @@ export default function MangaList() {
                     <td>{grouped.maxVolume}</td>
                     <td>{grouped.representative.category?.name}</td>
                     <td>{grouped.representative.publisher?.name}</td>
-                    <td>
-                      {isAdmin ? (
+                    {showActionColumn ? (
+                      <td>
+                        {isAdmin ? (
                         <>
                           <Link to={`/mangas/${grouped.representative.id}/edit`}>Edit</Link>{" "}
                           <button
@@ -116,10 +118,9 @@ export default function MangaList() {
                             Delete
                           </button>
                         </>
-                      ) : (
-                        <span>Nur Lesen</span>
-                      )}
-                    </td>
+                        ) : null}
+                      </td>
+                    ) : null}
                   </tr>
                 );
               })}

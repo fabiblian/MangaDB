@@ -139,7 +139,10 @@ class MangaControllerSecurityTest {
     }
 
 
-
+    /**
+     * Unit-Tests
+     * @throws Exception
+     */
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -160,4 +163,36 @@ class MangaControllerSecurityTest {
                 .andExpect(jsonPath("$.title").value("Admin Manga"))
                 .andExpect(jsonPath("$.id").isNumber());
     }
+
+
+    /**
+     * User mit Username elias wird gemockt und Manga Erst keine Authorisierung möglich ohne Login
+     * @throws Exception
+     */
+
+    @Test
+    @WithMockUser(username = "elias", roles = {"USER"}) // Ein normaler User...
+    void createManga_asUserElias_shouldReturn403() throws Exception {
+
+        String mangaJson = """
+            {
+              "title": "Attack on Titan",
+              "volume": 4,
+              "category": { "id": %d },
+              "publisher": { "id": %d }
+            }
+            """.formatted(categoryId, publisherId);
+
+        mockMvc.perform(post("/mangas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mangaJson))
+                .andExpect(status().isForbidden()); // Erwartet 403 statt 201
+    }
+
+
+
+
+
+
+
 }

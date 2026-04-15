@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,10 @@ public class ReadingSession {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Status resultingStatus;
+
+    @Min(1)
+    @Column(name = "chapters_read")
+    private Integer chaptersRead;
 
     @Size(max = 255)
     @Column(length = 255)
@@ -82,6 +87,14 @@ public class ReadingSession {
 
     public void setResultingStatus(Status resultingStatus) {
         this.resultingStatus = resultingStatus;
+    }
+
+    public Integer getChaptersRead() {
+        return chaptersRead;
+    }
+
+    public void setChaptersRead(Integer chaptersRead) {
+        this.chaptersRead = chaptersRead;
     }
 
     public String getNote() {

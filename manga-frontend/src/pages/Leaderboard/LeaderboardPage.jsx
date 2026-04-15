@@ -75,7 +75,7 @@ export default function LeaderboardPage() {
       <section className="leaderboard-panel">
         <div className="leaderboard-panel-head">
           <h3>Alle User</h3>
-          <span className="leaderboard-user-tag">{entries.length} Eintraege</span>
+          <span className="leaderboard-user-tag">{entries.length} Einträge</span>
         </div>
 
         {entries.length ? (
@@ -113,7 +113,7 @@ export default function LeaderboardPage() {
             </tbody>
           </table>
         ) : (
-          <p>Noch keine User fuer das Leaderboard vorhanden.</p>
+          <p>Noch keine User für das Leaderboard vorhanden.</p>
         )}
       </section>
     </div>

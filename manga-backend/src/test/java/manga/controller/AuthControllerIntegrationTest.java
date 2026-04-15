@@ -76,8 +76,8 @@ class AuthControllerIntegrationTest {
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginJson))
+                .content(loginJson))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value("Ungueltige Anmeldedaten"));
+                .andExpect(jsonPath("$.error").value("Ungültige Anmeldedaten"));
     }
 }

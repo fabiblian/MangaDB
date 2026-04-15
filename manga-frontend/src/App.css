@@ -109,13 +109,16 @@
 
 .manga-list-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(260px, 0.85fr);
+  grid-template-columns: fit-content(100%) minmax(280px, 340px);
   gap: 1rem;
   align-items: start;
+  justify-content: center;
 }
 
 .manga-list-table-wrap {
   min-width: 0;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .manga-row-selected {

@@ -80,7 +80,7 @@ export default function MangaEdit() {
         <label>
           Kategorie
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-            <option value="">-- waehlen --</option>
+            <option value="">-- wählen --</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -92,7 +92,7 @@ export default function MangaEdit() {
         <label>
           Verlag
           <select value={publisherId} onChange={(e) => setPublisherId(e.target.value)}>
-            <option value="">-- waehlen --</option>
+            <option value="">-- wählen --</option>
             {publishers.map((publisher) => (
               <option key={publisher.id} value={publisher.id}>
                 {publisher.name}

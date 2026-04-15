@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api, getApiErrorMessage } from "../../api/client";
 import { ReadingSessionApi } from "../../api/readingSessionApi";
 import { useAuth } from "../../contexts/AuthContext";
@@ -21,10 +21,41 @@ export default function ReadingSessionPage() {
   const [users, setUsers] = useState([]);
   const [mangaId, setMangaId] = useState("");
   const [userId, setUserId] = useState("");
+  const [chaptersRead, setChaptersRead] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const isAdmin = user?.role === "ADMIN";
+
+  const mangaOptions = useMemo(
+    () =>
+      Object.values(
+        mangas.reduce((accumulator, manga) => {
+          const existing = accumulator[manga.title];
+          const volume = manga.volume ?? 0;
+
+          if (!existing) {
+            accumulator[manga.title] = {
+              id: manga.id,
+              title: manga.title,
+              maxVolume: volume,
+            };
+            return accumulator;
+          }
+
+          if (volume > existing.maxVolume) {
+            accumulator[manga.title] = {
+              id: manga.id,
+              title: manga.title,
+              maxVolume: volume,
+            };
+          }
+
+          return accumulator;
+        }, {}),
+      ).sort((left, right) => left.title.localeCompare(right.title, "de")),
+    [mangas],
+  );
 
   const load = async () => {
     setError("");
@@ -72,8 +103,14 @@ export default function ReadingSessionPage() {
       return;
     }
 
+    if (!chaptersRead || Number(chaptersRead) < 1) {
+      setError("Chapter-Anzahl muss mindestens 1 sein");
+      return;
+    }
+
     const payload = {
       manga: { id: Number(mangaId) },
+      chaptersRead: Number(chaptersRead),
       note: note.trim() ? note.trim() : null,
     };
 
@@ -85,6 +122,7 @@ export default function ReadingSessionPage() {
       setSaving(true);
       await ReadingSessionApi.create(payload);
       setMangaId("");
+      setChaptersRead("");
       setNote("");
       await load();
     } catch (e) {
@@ -95,13 +133,13 @@ export default function ReadingSessionPage() {
   };
 
   const onDelete = async (id) => {
-    if (!confirm("Reading Session wirklich loeschen?")) return;
+    if (!confirm("Reading Session wirklich löschen?")) return;
 
     try {
       await ReadingSessionApi.remove(id);
       await load();
     } catch (e) {
-      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 
@@ -111,7 +149,7 @@ export default function ReadingSessionPage() {
         <div>
           <h2>Reading Sessions</h2>
           <p className="leaderboard-subtitle">
-            Erfasse Leseereignisse pro Band und aktualisiere dabei automatisch den Status.
+            Erfasse Leseereignisse pro Titel und aktualisiere dabei automatisch den Status.
           </p>
         </div>
       </div>
@@ -129,7 +167,7 @@ export default function ReadingSessionPage() {
             <label>
               User*
               <select value={userId} onChange={(event) => setUserId(event.target.value)}>
-                <option value="">-- waehlen --</option>
+                <option value="">-- wählen --</option>
                 {users.map((entry) => (
                   <option key={entry.id} value={entry.id}>
                     {entry.username} (ID {entry.id})
@@ -142,13 +180,23 @@ export default function ReadingSessionPage() {
           <label>
             Manga*
             <select value={mangaId} onChange={(event) => setMangaId(event.target.value)}>
-              <option value="">-- waehlen --</option>
-              {mangas.map((manga) => (
+              <option value="">-- wählen --</option>
+              {mangaOptions.map((manga) => (
                 <option key={manga.id} value={manga.id}>
-                  {manga.title} #{manga.volume} (ID {manga.id})
+                  {manga.title}
                 </option>
               ))}
             </select>
+          </label>
+
+          <label>
+            Gelesene Chapter*
+            <input
+              type="number"
+              min="1"
+              value={chaptersRead}
+              onChange={(event) => setChaptersRead(event.target.value)}
+            />
           </label>
 
           <label className="reading-session-form-note">
@@ -165,7 +213,7 @@ export default function ReadingSessionPage() {
       <section className="leaderboard-panel">
         <div className="leaderboard-panel-head">
           <h3>Gespeicherte Sessions</h3>
-          <span className="leaderboard-user-tag">{sessions.length} Eintraege</span>
+          <span className="leaderboard-user-tag">{sessions.length} Einträge</span>
         </div>
 
         {sessions.length ? (
@@ -175,6 +223,7 @@ export default function ReadingSessionPage() {
                 <th>ID</th>
                 {isAdmin ? <th>User</th> : null}
                 <th>Manga</th>
+                <th>Chapter</th>
                 <th>Gelesen am</th>
                 <th>Resultierender Status</th>
                 <th>Notiz</th>
@@ -186,9 +235,8 @@ export default function ReadingSessionPage() {
                 <tr key={session.id}>
                   <td>{session.id}</td>
                   {isAdmin ? <td>{session.user?.username}</td> : null}
-                  <td>
-                    {session.manga?.title} #{session.manga?.volume}
-                  </td>
+                  <td>{session.manga?.title}</td>
+                  <td>{session.chaptersRead ?? "-"}</td>
                   <td>{formatReadAt(session.readAt)}</td>
                   <td>{session.resultingStatus}</td>
                   <td>{session.note ?? ""}</td>

@@ -53,19 +53,25 @@ public class ReadingSessionService {
         if (input.getManga() == null || input.getManga().getId() == null) {
             throw new IllegalArgumentException("Manga ist Pflicht");
         }
+        if (input.getChaptersRead() == null || input.getChaptersRead() < 1) {
+            throw new IllegalArgumentException("Kapitelanzahl muss mindestens 1 sein");
+        }
 
         Manga manga = mangaRepository.findById(input.getManga().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Manga nicht gefunden"));
 
         User targetUser = resolveTargetUser(input, currentUser, isAdmin);
         Status resultingStatus = determineResultingStatus(targetUser.getId(), manga);
+        ReadingSession session = readingSessionRepository
+                .findTopByUserIdAndMangaIdOrderByReadAtDesc(targetUser.getId(), manga.getId())
+                .orElseGet(ReadingSession::new);
 
-        ReadingSession session = new ReadingSession();
         session.setUser(targetUser);
         session.setManga(manga);
         session.setReadAt(LocalDateTime.now());
         session.setNote(input.getNote());
         session.setResultingStatus(resultingStatus);
+        session.setChaptersRead((session.getChaptersRead() == null ? 0 : session.getChaptersRead()) + input.getChaptersRead());
         ReadingSession savedSession = readingSessionRepository.save(session);
 
         UserManga userManga = userMangaRepository.findByUserIdAndMangaId(targetUser.getId(), manga.getId())
@@ -126,13 +132,6 @@ public class ReadingSessionService {
     }
 
     private Status determineResultingStatus(Integer userId, Manga manga) {
-        Manga lastKnownVolume = mangaRepository.findTopByTitleIgnoreCaseOrderByVolumeDesc(manga.getTitle())
-                .orElse(manga);
-
-        if (manga.getVolume().equals(lastKnownVolume.getVolume())) {
-            return Status.COMPLETED;
-        }
-
         return userMangaRepository.findByUserIdAndMangaId(userId, manga.getId())
                 .map(UserManga::getStatus)
                 .filter(status -> status == Status.COMPLETED)

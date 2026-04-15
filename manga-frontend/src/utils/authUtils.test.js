@@ -58,8 +58,8 @@ test("getApiErrorMessage prefers backend error fields over fallback", () => {
     "Nicht authentifiziert"
   );
   assert.equal(
-    getApiErrorMessage({ response: { data: { message: "Ungueltige Daten" } } }, "Fallback"),
-    "Ungueltige Daten"
+    getApiErrorMessage({ response: { data: { message: "Ungültige Daten" } } }, "Fallback"),
+    "Ungültige Daten"
   );
   assert.equal(getApiErrorMessage({}, "Fallback"), "Fallback");
 });

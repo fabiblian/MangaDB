@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS reading_sessions (
   manga_id INT NOT NULL,
   read_at DATETIME NOT NULL,
   resulting_status ENUM('PLANNED', 'READING', 'COMPLETED', 'DROPPED') NOT NULL,
+  chapters_read INT,
   note VARCHAR(255),
   CONSTRAINT fk_reading_session_user
     FOREIGN KEY (user_id) REFERENCES users(id),
@@ -111,6 +112,6 @@ INSERT IGNORE INTO user_manga (user_id, manga_id, status, rating, note) VALUES
 (3, 4, 'DROPPED', 4, 'Nicht mein Stil'),
 (2, 5, 'COMPLETED', 8, 'Sehr spannend');
 
-INSERT IGNORE INTO reading_sessions (id, user_id, manga_id, read_at, resulting_status, note) VALUES
-(1, 1, 2, '2026-04-15 20:00:00', 'READING', 'Heute weitergelesen'),
-(2, 2, 5, '2026-04-15 21:00:00', 'COMPLETED', 'Band abgeschlossen');
+INSERT IGNORE INTO reading_sessions (id, user_id, manga_id, read_at, resulting_status, chapters_read, note) VALUES
+(1, 1, 2, '2026-04-15 20:00:00', 'READING', 4, 'Heute weitergelesen'),
+(2, 2, 5, '2026-04-15 21:00:00', 'COMPLETED', 6, 'Band abgeschlossen');

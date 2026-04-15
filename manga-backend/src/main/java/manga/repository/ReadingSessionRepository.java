@@ -11,4 +11,6 @@ public interface ReadingSessionRepository extends JpaRepository<ReadingSession, 
     List<ReadingSession> findAllByUserIdOrderByReadAtDesc(Integer userId);
 
     Optional<ReadingSession> findByIdAndUserId(Long id, Integer userId);
+
+    Optional<ReadingSession> findTopByUserIdAndMangaIdOrderByReadAtDesc(Integer userId, Integer mangaId);
 }

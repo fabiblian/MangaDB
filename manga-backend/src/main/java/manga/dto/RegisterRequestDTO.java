@@ -11,7 +11,7 @@ public class RegisterRequestDTO {
     private String username;
 
     @NotBlank(message = "Email ist erforderlich")
-    @Email(message = "Email ist ungueltig")
+    @Email(message = "Email ist ungültig")
     @Size(max = 100, message = "Email darf maximal 100 Zeichen lang sein")
     private String email;
 

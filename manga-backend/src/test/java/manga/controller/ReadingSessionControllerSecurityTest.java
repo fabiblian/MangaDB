@@ -95,6 +95,7 @@ class ReadingSessionControllerSecurityTest {
         hansSession.setManga(titleVol1);
         hansSession.setReadAt(LocalDateTime.now().minusDays(1));
         hansSession.setResultingStatus(Status.READING);
+        hansSession.setChaptersRead(3);
         hansSession.setNote("Hans session");
         readingSessionRepository.save(hansSession);
 
@@ -103,6 +104,7 @@ class ReadingSessionControllerSecurityTest {
         tomSession.setManga(otherVol1);
         tomSession.setReadAt(LocalDateTime.now());
         tomSession.setResultingStatus(Status.COMPLETED);
+        tomSession.setChaptersRead(5);
         tomSession.setNote("Tom session");
         tomSessionId = readingSessionRepository.save(tomSession).getId();
     }
@@ -134,6 +136,7 @@ class ReadingSessionControllerSecurityTest {
                 {
                   "user": { "id": %d },
                   "manga": { "id": %d },
+                  "chaptersRead": 2,
                   "note": "not allowed"
                 }
                 """.formatted(tom.getId(), otherVol1.getId());
@@ -153,15 +156,17 @@ class ReadingSessionControllerSecurityTest {
         String payload = """
                 {
                   "manga": { "id": %d },
+                  "chaptersRead": 4,
                   "note": "new progress"
                 }
                 """.formatted(titleVol1.getId());
 
         mockMvc.perform(post("/reading-sessions")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(payload))
+                .content(payload))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.resultingStatus").value("READING"));
+                .andExpect(jsonPath("$.resultingStatus").value("READING"))
+                .andExpect(jsonPath("$.chaptersRead").value(4));
 
         UserManga createdEntry = userMangaRepository.findByUserIdAndMangaId(hans.getId(), titleVol1.getId())
                 .orElseThrow();
@@ -181,6 +186,7 @@ class ReadingSessionControllerSecurityTest {
         String payload = """
                 {
                   "manga": { "id": %d },
+                  "chaptersRead": 3,
                   "note": "continue reading"
                 }
                 """.formatted(titleVol1.getId());
@@ -203,6 +209,7 @@ class ReadingSessionControllerSecurityTest {
         String payload = """
                 {
                   "manga": { "id": %d },
+                  "chaptersRead": 7,
                   "note": "finished final volume"
                 }
                 """.formatted(titleVol2.getId());

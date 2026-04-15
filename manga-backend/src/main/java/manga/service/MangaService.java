@@ -55,7 +55,7 @@ public class MangaService {
             mangaRepository.flush();
         } catch (DataIntegrityViolationException ex) {
             throw new IllegalStateException(
-                    "Manga kann nicht geloescht werden, weil noch UserManga-Eintraege darauf verweisen.",
+                    "Manga kann nicht gelöscht werden, weil noch UserManga-Einträge darauf verweisen.",
                     ex
             );
         }

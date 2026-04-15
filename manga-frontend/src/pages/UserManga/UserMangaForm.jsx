@@ -47,7 +47,7 @@ export default function UserMangaForm() {
     if (isAdmin && !userId) return "User ist Pflicht";
     if (!mangaId) return "Manga ist Pflicht";
     if (!status) return "Status ist Pflicht";
-    if (!STATUS_VALUES.includes(status)) return "Ungueltiger Status";
+    if (!STATUS_VALUES.includes(status)) return "Ungültiger Status";
     if (rating !== "") {
       const parsedRating = Number(rating);
       if (Number.isNaN(parsedRating) || parsedRating < 0 || parsedRating > 10) {
@@ -97,7 +97,7 @@ export default function UserMangaForm() {
           <label>
             User*
             <select value={userId} onChange={(e) => setUserId(e.target.value)}>
-              <option value="">-- waehlen --</option>
+              <option value="">-- wählen --</option>
               {users.map((entry) => (
                 <option key={entry.id} value={entry.id}>
                   {entry.username} (ID {entry.id})
@@ -110,7 +110,7 @@ export default function UserMangaForm() {
         <label>
           Manga*
           <select value={mangaId} onChange={(e) => setMangaId(e.target.value)}>
-            <option value="">-- waehlen --</option>
+            <option value="">-- wählen --</option>
             {mangas.map((manga) => (
               <option key={manga.id} value={manga.id}>
                 {manga.title} #{manga.volume} (ID {manga.id})
@@ -122,7 +122,7 @@ export default function UserMangaForm() {
         <label>
           Status*
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">-- waehlen --</option>
+            <option value="">-- wählen --</option>
             {STATUS_VALUES.map((entry) => (
               <option key={entry} value={entry}>
                 {entry}

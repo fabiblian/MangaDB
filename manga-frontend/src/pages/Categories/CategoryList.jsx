@@ -25,12 +25,12 @@ export default function CategoryList() {
   }, []);
 
   const onDelete = async (id) => {
-    if (!confirm("Kategorie wirklich loeschen?")) return;
+    if (!confirm("Kategorie wirklich löschen?")) return;
     try {
       await CategoryApi.remove(id);
       await load();
     } catch (e) {
-      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 

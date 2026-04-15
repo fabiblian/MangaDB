@@ -64,6 +64,6 @@ public class AuthController {
                                 jwtService.getExpirationTime()
                         )))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "Ungueltige Anmeldedaten")));
+                        .body(Map.of("error", "Ungültige Anmeldedaten")));
     }
 }

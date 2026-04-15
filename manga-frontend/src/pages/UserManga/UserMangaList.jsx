@@ -26,12 +26,12 @@ export default function UserMangaList() {
   }, []);
 
   const onDelete = async (id) => {
-    if (!confirm("Status-Eintrag wirklich loeschen?")) return;
+    if (!confirm("Status-Eintrag wirklich löschen?")) return;
     try {
       await UserMangaApi.remove(id);
       await load();
     } catch (e) {
-      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 

@@ -43,7 +43,7 @@ export default function UserMangaEdit() {
 
   const validate = () => {
     if (!status) return "Status ist Pflicht";
-    if (!STATUS_VALUES.includes(status)) return "Ungueltiger Status";
+    if (!STATUS_VALUES.includes(status)) return "Ungültiger Status";
     if (rating !== "") {
       const r = Number(rating);
       if (Number.isNaN(r) || r < 0 || r > 10) return "Rating muss zwischen 0 und 10 sein";
@@ -89,7 +89,7 @@ export default function UserMangaEdit() {
         <label>
           Status*
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">-- waehlen --</option>
+            <option value="">-- wählen --</option>
             {STATUS_VALUES.map((s) => (
               <option key={s} value={s}>
                 {s}

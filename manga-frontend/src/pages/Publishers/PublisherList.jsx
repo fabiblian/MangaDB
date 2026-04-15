@@ -25,12 +25,12 @@ export default function PublisherList() {
   }, []);
 
   const onDelete = async (id) => {
-    if (!confirm("Verlag wirklich loeschen?")) return;
+    if (!confirm("Verlag wirklich löschen?")) return;
     try {
       await PublisherApi.remove(id);
       await load();
     } catch (e) {
-      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 

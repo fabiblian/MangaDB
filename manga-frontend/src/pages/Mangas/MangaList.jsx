@@ -28,13 +28,13 @@ export default function MangaList() {
   }, []);
 
   const onDelete = async (id) => {
-    if (!confirm("Manga wirklich loeschen?")) return;
+    if (!confirm("Manga wirklich löschen?")) return;
 
     try {
       await MangaApi.remove(id);
       await load();
     } catch (e) {
-      setError(getApiErrorMessage(e, "Loeschen fehlgeschlagen"));
+      setError(getApiErrorMessage(e, "Löschen fehlgeschlagen"));
     }
   };
 
@@ -131,7 +131,7 @@ export default function MangaList() {
         <aside className="manga-detail-card">
           {selectedManga ? (
             <>
-              <p className="manga-detail-eyebrow">Ausgewaehltes Cover</p>
+              <p className="manga-detail-eyebrow">Ausgewähltes Cover</p>
               <h3>{selectedManga.title}</h3>
               <p>
                   {selectedManga.representative.category?.name}

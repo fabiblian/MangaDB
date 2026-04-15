@@ -67,7 +67,7 @@ public class PublisherController {
             return ResponseEntity.noContent().build();
         } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Publisher kann nicht geloescht werden, weil noch Manga-Eintraege darauf verweisen.");
+                    .body("Publisher kann nicht gelöscht werden, weil noch Manga-Einträge darauf verweisen.");
         }
     }
 }

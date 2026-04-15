@@ -53,6 +53,9 @@ public class ReadingSessionService {
         if (input.getManga() == null || input.getManga().getId() == null) {
             throw new IllegalArgumentException("Manga ist Pflicht");
         }
+        if (input.getChaptersRead() == null || input.getChaptersRead() < 1) {
+            throw new IllegalArgumentException("Kapitelanzahl muss mindestens 1 sein");
+        }
 
         Manga manga = mangaRepository.findById(input.getManga().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Manga nicht gefunden"));
@@ -66,6 +69,7 @@ public class ReadingSessionService {
         session.setReadAt(LocalDateTime.now());
         session.setNote(input.getNote());
         session.setResultingStatus(resultingStatus);
+        session.setChaptersRead(input.getChaptersRead());
         ReadingSession savedSession = readingSessionRepository.save(session);
 
         UserManga userManga = userMangaRepository.findByUserIdAndMangaId(targetUser.getId(), manga.getId())

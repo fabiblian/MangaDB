@@ -97,6 +97,50 @@ class MangaControllerSecurityTest {
                 .andExpect(jsonPath("$.error").value("Zugriff verweigert"));
     }
 
+
+
+    @Test
+    @WithMockUser(username = "user1", roles = {"USER"})
+    void createManga_asUser1_shouldReturn403() throws Exception {
+        String mangaJson = """
+                {
+                  "title": "Forbidden Manga",
+                  "volume": 2,
+                  "category": { "id": %d },
+                  "publisher": { "id": %d }
+                }
+                """.formatted(categoryId, publisherId);
+
+        mockMvc.perform(post("/mangas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mangaJson))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Zugriff verweigert"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void createManga_asAdmin_shouldReturn202() throws Exception {
+        String mangaJson = """
+                {
+                  "title": "Admin Manga",
+                  "volume": 2,
+                  "category": { "id": %d },
+                  "publisher": { "id": %d }
+                }
+                """.formatted(categoryId, publisherId);
+
+        mockMvc.perform(post("/mangas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mangaJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("Admin Manga"))
+                .andExpect(jsonPath("$.id").isNumber());
+    }
+
+
+
+
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createManga_asAdmin_shouldReturn201() throws Exception {

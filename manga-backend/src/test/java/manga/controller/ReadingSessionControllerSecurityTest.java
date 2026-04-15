@@ -159,7 +159,7 @@ class ReadingSessionControllerSecurityTest {
                   "chaptersRead": 4,
                   "note": "new progress"
                 }
-                """.formatted(titleVol1.getId());
+                """.formatted(titleVol2.getId());
 
         mockMvc.perform(post("/reading-sessions")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,10 +168,33 @@ class ReadingSessionControllerSecurityTest {
                 .andExpect(jsonPath("$.resultingStatus").value("READING"))
                 .andExpect(jsonPath("$.chaptersRead").value(4));
 
-        UserManga createdEntry = userMangaRepository.findByUserIdAndMangaId(hans.getId(), titleVol1.getId())
+        UserManga createdEntry = userMangaRepository.findByUserIdAndMangaId(hans.getId(), titleVol2.getId())
                 .orElseThrow();
 
         Assertions.assertEquals(Status.READING, createdEntry.getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "hans", roles = {"USER"})
+    void create_shouldAccumulateChaptersOnExistingSession() throws Exception {
+        long beforeCount = readingSessionRepository.count();
+
+        String payload = """
+                {
+                  "manga": { "id": %d },
+                  "chaptersRead": 4,
+                  "note": "more chapters"
+                }
+                """.formatted(titleVol1.getId());
+
+        mockMvc.perform(post("/reading-sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.chaptersRead").value(7))
+                .andExpect(jsonPath("$.resultingStatus").value("READING"));
+
+        Assertions.assertEquals(beforeCount, readingSessionRepository.count());
     }
 
     @Test
@@ -205,12 +228,41 @@ class ReadingSessionControllerSecurityTest {
 
     @Test
     @WithMockUser(username = "hans", roles = {"USER"})
-    void create_shouldSetCompletedForLastKnownVolume() throws Exception {
+    void create_shouldKeepReadingForLastKnownVolume() throws Exception {
         String payload = """
                 {
                   "manga": { "id": %d },
                   "chaptersRead": 7,
                   "note": "finished final volume"
+                }
+                """.formatted(titleVol2.getId());
+
+        mockMvc.perform(post("/reading-sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.resultingStatus").value("READING"));
+
+        UserManga updatedEntry = userMangaRepository.findByUserIdAndMangaId(hans.getId(), titleVol2.getId())
+                .orElseThrow();
+
+        Assertions.assertEquals(Status.READING, updatedEntry.getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "hans", roles = {"USER"})
+    void create_shouldKeepCompletedWhenEntryWasAlreadyCompleted() throws Exception {
+        UserManga completedEntry = new UserManga();
+        completedEntry.setUser(hans);
+        completedEntry.setManga(titleVol2);
+        completedEntry.setStatus(Status.COMPLETED);
+        userMangaRepository.save(completedEntry);
+
+        String payload = """
+                {
+                  "manga": { "id": %d },
+                  "chaptersRead": 2,
+                  "note": "re-reading"
                 }
                 """.formatted(titleVol2.getId());
 

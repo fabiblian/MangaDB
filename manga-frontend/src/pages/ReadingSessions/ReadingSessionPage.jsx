@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api, getApiErrorMessage } from "../../api/client";
 import { ReadingSessionApi } from "../../api/readingSessionApi";
 import { useAuth } from "../../contexts/AuthContext";
@@ -26,6 +26,36 @@ export default function ReadingSessionPage() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const isAdmin = user?.role === "ADMIN";
+
+  const mangaOptions = useMemo(
+    () =>
+      Object.values(
+        mangas.reduce((accumulator, manga) => {
+          const existing = accumulator[manga.title];
+          const volume = manga.volume ?? 0;
+
+          if (!existing) {
+            accumulator[manga.title] = {
+              id: manga.id,
+              title: manga.title,
+              maxVolume: volume,
+            };
+            return accumulator;
+          }
+
+          if (volume > existing.maxVolume) {
+            accumulator[manga.title] = {
+              id: manga.id,
+              title: manga.title,
+              maxVolume: volume,
+            };
+          }
+
+          return accumulator;
+        }, {}),
+      ).sort((left, right) => left.title.localeCompare(right.title, "de")),
+    [mangas],
+  );
 
   const load = async () => {
     setError("");
@@ -119,7 +149,7 @@ export default function ReadingSessionPage() {
         <div>
           <h2>Reading Sessions</h2>
           <p className="leaderboard-subtitle">
-            Erfasse Leseereignisse pro Band und aktualisiere dabei automatisch den Status.
+            Erfasse Leseereignisse pro Titel und aktualisiere dabei automatisch den Status.
           </p>
         </div>
       </div>
@@ -151,9 +181,9 @@ export default function ReadingSessionPage() {
             Manga*
             <select value={mangaId} onChange={(event) => setMangaId(event.target.value)}>
               <option value="">-- wählen --</option>
-              {mangas.map((manga) => (
+              {mangaOptions.map((manga) => (
                 <option key={manga.id} value={manga.id}>
-                  {manga.title} #{manga.volume} (ID {manga.id})
+                  {manga.title}
                 </option>
               ))}
             </select>
@@ -205,9 +235,7 @@ export default function ReadingSessionPage() {
                 <tr key={session.id}>
                   <td>{session.id}</td>
                   {isAdmin ? <td>{session.user?.username}</td> : null}
-                  <td>
-                    {session.manga?.title} #{session.manga?.volume}
-                  </td>
+                  <td>{session.manga?.title}</td>
                   <td>{session.chaptersRead ?? "-"}</td>
                   <td>{formatReadAt(session.readAt)}</td>
                   <td>{session.resultingStatus}</td>

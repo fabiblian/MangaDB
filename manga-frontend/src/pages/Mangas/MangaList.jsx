@@ -74,7 +74,6 @@ export default function MangaList() {
               <tr>
                 <th>ID</th>
                 <th>Titel</th>
-                <th>Max Band</th>
                 <th>Kategorie</th>
                 <th>Verlag</th>
                 {showActionColumn ? <th>Aktion</th> : null}
@@ -100,7 +99,6 @@ export default function MangaList() {
                         {grouped.title}
                       </button>
                     </td>
-                    <td>{grouped.maxVolume}</td>
                     <td>{grouped.representative.category?.name}</td>
                     <td>{grouped.representative.publisher?.name}</td>
                     {showActionColumn ? (
